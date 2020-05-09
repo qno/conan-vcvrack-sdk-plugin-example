@@ -1,0 +1,11 @@
+[requires]
+vcvrack-sdk/1.1.6@vcvrack/stable
+ninja/1.9.0
+
+[generators]
+cmake
+virtualenv
+
+[options]
+
+[imports]
