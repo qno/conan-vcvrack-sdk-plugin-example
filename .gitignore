@@ -1,6 +1,9 @@
 /build
 /dep
 /dist
+/out
+/.vs
+CMakeSettings.json
 /plugin.so
 /plugin.dylib
 /plugin.dll

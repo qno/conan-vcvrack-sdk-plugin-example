@@ -2,10 +2,15 @@
 
 This example follows the [VCV Rack Plugin Development Tutorial](https://vcvrack.com/manual/PluginDevelopmentTutorial).
 
-## Setup development environment
-
 It is not necessary to setup the development environment for Rack, like described in the [tutorial](https://vcvrack.com/manual/Building#setting-up-your-development-environment), as this is handled by Conan package manager.
 Besides the fact that you need to have a C++ compiler installed on Linux and MacOS.
+
+## Content
+* [Setup](#Setup-development-environment)
+* [Create a Rack plugin](#Create-a-Rack-plugin)
+* [Build the plugin with the Rack SDK Makefile](#Build-the-plugin-with-the-Rack-SDK-Makefile)
+* [Using CMake for development](#Using-CMake-for-development)
+* [Developing a Rack plugin under Windows with MinGW GCC and use MS Visual Studio IDE](#Developing-a-Rack-plugin-under-Windows-with-MinGW-GCC-and-use-MS-Visual-Studio-IDE)
 
 ### Follow the usage instructions from [conan-vcvrack-sdk](https://github.com/qno/conan-vcvrack-sdk#usage)
 
@@ -82,12 +87,16 @@ Make sure the virtual environment is still activated and you are still in the so
 
 For testing start the Rack application and load the plugin.
 
+It maybe seems to be a bit strange to have a build folder created which is not used when building the plugin with `make`,
+but it is needed so Conan can install the dependencies and create the necessary scripts for the environment. Also,
+by using the Rack SDK Makefile, it is only possible to build a plugin within the source folder.
+
 ### Using CMake for development
 
 The advantage of using CMake for development is that a lot of C++ IDE's (Clion, QtCreator, VSCode etc.) have builtin
 support for CMake and can directly open generated CMake projects.
 
-* In the sources folder add a main `CMakeLists.txt` file with the following content
+* In the sources folder add a `CMakeLists.txt` file with the following content
 (or just use the [sources](https://github.com/qno/conan-vcvrack-sdk-plugin-example/archive/master.zip) from this repository):
 ```
 cmake_minimum_required(VERSION 3.10)
@@ -148,3 +157,68 @@ set_target_properties(${LIB_NAME} PROPERTIES PREFIX "")
 * Build with `cmake --build . --target install` (or `ninja install`)
 
 For testing start the Rack application and load the plugin.
+
+***Note:*** If a plugin should be published in the [VCV Rack Library](https://library.vcvrack.com), it will be always
+build with the VCV Rack Makefile based process. To make this work when using CMake, the Makefile of the plugin just
+has to be updated as well by adding the required source files and include path setup.
+
+## Developing a Rack plugin under Windows with MinGW GCC and use MS Visual Studio IDE
+
+It is possible to use the MinGW GCC toolchain in Visual Studio for development by using the feature
+[Open Folder](https://docs.microsoft.com/en-us/visualstudio/ide/develop-code-in-visual-studio-without-projects-or-solutions?view=vs-2019).
+It requires the installation of [Visual Studio community](https://visualstudio.microsoft.com) (current is 2019).
+
+### Create a CMakeSettings.json for Visual Studio
+
+The conan-vcvrack-sdk recipe is capable of generating the required `CMakeSettings.json` automatically
+by adding the `VSCMakeSettings` generators section to the `conanfile.txt`:
+```
+...
+[generators]
+cmake
+virtualenv
+VSCMakeSettings
+...
+```
+As next it is required to extend the project `CMakeLists.txt` with a workaround, because Visual Studio is using a built-in
+CMake program and therfore won't be able to create and read the required information from the`conanbuildinfo.cmake` file.
+
+Replace the lines containing:
+```
+...
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+conan_basic_setup()
+...
+```
+with:
+```
+if (EXISTS ${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+  message(STATUS "conanbuildinfo.cmake detected, configure project with Conan")
+  include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+  conan_basic_setup()
+else ()
+  message(STATUS "conanbuildinfo.cmake not detected, try to configure project with RACK_SDK variable")
+  if (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+    if ("${RACK_SDK}" STREQUAL "")
+      message(FATAL_ERROR "Path to Rack SDK missing! Add -DRACK_SDK=<path to Rack SDK> to the cmake call.")
+    else ()
+      message(STATUS "Use Rack SDK: ${RACK_SDK}")
+      include_directories("${RACK_SDK}/include" "${RACK_SDK}/dep/include")
+      link_directories(${RACK_SDK})
+      add_definitions(-DARCH_WIN -D_USE_MATH_DEFINES -march=nocona -funsafe-math-optimizations -fPIC
+                      -Wsuggest-override -Wall -Wextra -Wno-unused-parameter)
+      set (CONAN_LIBS "Rack")
+      set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+    endif ()
+  else ()
+    message(FATAL_ERROR "Configure project with RACK_SDK variable is only supported on Windows platform!")
+  endif ()
+endif ()
+```
+
+### Install the project with Conan
+* Change into the build directory, eg.g `vcvrack-sdk-plugin-example-build`
+* Execute the command `conan install -pr mingw ..\vcvrack-sdk-plugin-example`
+* Copy the generated `CMakeSettings.json` file into the sources folder
+
+Now start Visual Studio IDE and open project by **Open Folder** and navigate to your plugin sources.
