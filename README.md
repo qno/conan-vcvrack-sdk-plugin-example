@@ -83,7 +83,12 @@ Make sure the virtual environment is still activated and you are still in the so
 For testing start the Rack application and load the plugin.
 
 ### Using CMake for development
-* In the sources folder add a main `CMakeLists.txt` file with the following content:
+
+The advantage of using CMake for development is that a lot of C++ IDE's (Clion, QtCreator, VSCode etc.) have builtin
+support for CMake and can directly open generated CMake projects.
+
+* In the sources folder add a main `CMakeLists.txt` file with the following content
+(or just use the [sources](https://github.com/qno/conan-vcvrack-sdk-plugin-example/archive/master.zip) from this repository):
 ```
 cmake_minimum_required(VERSION 3.10)
 
