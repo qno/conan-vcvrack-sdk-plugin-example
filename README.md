@@ -3,7 +3,7 @@
 This example follows the [VCV Rack Plugin Development Tutorial](https://vcvrack.com/manual/PluginDevelopmentTutorial).
 
 It is not necessary to setup the development environment for Rack, like described in the [tutorial](https://vcvrack.com/manual/Building#setting-up-your-development-environment), as this is handled by Conan package manager.
-Besides the fact that you need to have a C++ compiler installed on Linux and MacOS.
+Except for the fact that a C++ compiler must be installed on Linux and MacOS.
 
 ## Content
 * [Setup](#Setup-development-environment)
@@ -14,7 +14,7 @@ Besides the fact that you need to have a C++ compiler installed on Linux and Mac
 
 ### Follow the usage instructions from [conan-vcvrack-sdk](https://github.com/qno/conan-vcvrack-sdk#usage)
 
-### additional setup for Windows
+### Additional setup for Windows
 
 Rack plugins for Windows are compiled with MinGW GCC.
 
@@ -166,7 +166,7 @@ has to be updated as well by adding the required source files and include path s
 
 It is possible to use the MinGW GCC toolchain in Visual Studio for development by using the feature
 [Open Folder](https://docs.microsoft.com/en-us/visualstudio/ide/develop-code-in-visual-studio-without-projects-or-solutions?view=vs-2019).
-It requires the installation of [Visual Studio community](https://visualstudio.microsoft.com) (current is 2019).
+It requires the installation of a recent [Visual Studio community](https://visualstudio.microsoft.com).
 
 ### Create a CMakeSettings.json for Visual Studio
 
@@ -181,7 +181,7 @@ VSCMakeSettings
 ...
 ```
 As next it is required to extend the project `CMakeLists.txt` with a workaround, because Visual Studio is using a built-in
-CMake program and therfore won't be able to create and read the required information from the`conanbuildinfo.cmake` file.
+CMake program and therefor won't be able to create and read the required information from the`conanbuildinfo.cmake` file.
 
 Replace the lines containing:
 ```
@@ -217,7 +217,7 @@ endif ()
 ```
 
 ### Install the project with Conan
-* Change into the build directory, eg.g `vcvrack-sdk-plugin-example-build`
+* Change into the build directory, e.g. `vcvrack-sdk-plugin-example-build`
 * Execute the command `conan install -pr mingw ..\vcvrack-sdk-plugin-example`
 * Copy the generated `CMakeSettings.json` file into the sources folder
 
