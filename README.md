@@ -11,9 +11,10 @@ Besides the fact that you need to have a C++ compiler installed on Linux and Mac
 
 ### additional setup for Windows
 
-Rack plugins for Windows are compiled with Gcc from MinGW.
+Rack plugins for Windows are compiled with MinGW GCC.
 
-* ***Note:*** There is no need to have MSYS2 and MinGW toolchain installed. It will be completely handled by Conan!
+***Note:*** There is no need to have MSYS2 and MinGW toolchain installed. It will be completely handled by Conan!
+
 * Create a [Conan profile](https://docs.conan.io/en/latest/reference/profiles.html) for MinGW under `<USER HOME>/.conan/profiles`, called e.g. `mingw`, with the following content:
     ```
     [settings]
@@ -53,13 +54,14 @@ Rack plugins for Windows are compiled with Gcc from MinGW.
   [imports]
   ```
 * Create a folder, called e.g. `vcvrack-sdk-plugin-example-build` and change into this directory
-* Execute the command `conan install ..\conan-vcvrack-sdk-plugin-example` (on Windows execute `conan install -pr mingw ..\conan-vcvrack-sdk-plugin-example`)
+* Execute the command `conan install ..\vcvrack-sdk-plugin-example` (on Windows execute `conan install -pr mingw ..\vcvrack-sdk-plugin-example`)
 
 This will setup the development environment and install all required dependencies.
 
 Now load the [generated virtual environment by Conan](https://docs.conan.io/en/latest/mastering/virtualenv.html?#virtualenv-generator):
 * on Windows call `activate.bat`
 * on Linux and MacOS call `source ./activate.sh`
+
 ***Note:*** To unload the virtual environment, call `deactivate.bat` on Windows or `source ./deactivate.sh` on Linux and MacOS.
 
 ### Create plugin with Rack SDK helper script
@@ -135,9 +137,9 @@ set_target_properties(${LIB_NAME} PROPERTIES PREFIX "")
 ### Build the plugin with CMake
 * Change into the build directory, e.g. `vcvrack-sdk-plugin-example-build` (make sure the virtual environment is still activated!)
 * Generate the project with CMake
- * On Windows execute `cmake -G Ninja -DPLUGIN_SLUG=MyPlugin -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="%HOMEPATH%"\Documents\Rack\plugins-v1 ..\vcvrack-sdk-plugin-example`
- * On MacOS execute `cmake -G Ninja -DPLUGIN_SLUG=MyPlugin -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$HOME/Documents/Rack/plugins-v1 ../vcvrack-sdk-plugin-example`
- * On Linux execute `cmake -G Ninja -DPLUGIN_SLUG=MyPlugin -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$HOME/.Rack/plugins-v1 ../vcvrack-sdk-plugin-example`
+  * On Windows execute `cmake -G Ninja -DPLUGIN_SLUG=MyPlugin -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="%HOMEPATH%"\Documents\Rack\plugins-v1 ..\vcvrack-sdk-plugin-example`
+  * On MacOS execute `cmake -G Ninja -DPLUGIN_SLUG=MyPlugin -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$HOME/Documents/Rack/plugins-v1 ../vcvrack-sdk-plugin-example`
+  * On Linux execute `cmake -G Ninja -DPLUGIN_SLUG=MyPlugin -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$HOME/.Rack/plugins-v1 ../vcvrack-sdk-plugin-example`
 * Build with `cmake --build . --target install` (or `ninja install`)
 
 For testing start the Rack application and load the plugin.
