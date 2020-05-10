@@ -10,7 +10,7 @@ Except for the fact that a C++ compiler must be installed on Linux and MacOS.
 * [Create a Rack plugin](#Create-a-Rack-plugin)
 * [Build the plugin with the Rack SDK Makefile](#Build-the-plugin-with-the-Rack-SDK-Makefile)
 * [Using CMake for development](#Using-CMake-for-development)
-* [Developing a Rack plugin under Windows with MinGW GCC and use MS Visual Studio IDE](#Developing-a-Rack-plugin-under-Windows-with-MinGW-GCC-and-use-MS-Visual-Studio-IDE)
+* [Developing a Rack plugin under Windows with Visual Studio using MinGW GCC](#Developing-a-Rack-plugin-under-Windows-with-Visual-Studio-using-MinGW-GCC)
 
 ### Follow the usage instructions from [conan-vcvrack-sdk](https://github.com/qno/conan-vcvrack-sdk#usage)
 
@@ -20,7 +20,7 @@ Rack plugins for Windows are compiled with MinGW GCC.
 
 ***Note:*** There is no need to have MSYS2 and MinGW toolchain installed. It will be completely handled by Conan!
 
-* Create a [Conan profile](https://docs.conan.io/en/latest/reference/profiles.html) for MinGW under `<USER HOME>/.conan/profiles`, called e.g. `mingw`, with the following content:
+* Create a [Conan profile](https://docs.conan.io/en/latest/reference/profiles.html) for MinGW under `<USER HOME>\.conan\profiles`, called e.g. `mingw`, with the following content:
     ```
     [settings]
     os=Windows
@@ -59,7 +59,7 @@ Rack plugins for Windows are compiled with MinGW GCC.
   [imports]
   ```
 * Create a folder, called e.g. `vcvrack-sdk-plugin-example-build` and change into this directory
-* Execute the command `conan install ..\vcvrack-sdk-plugin-example` (on Windows execute `conan install -pr mingw ..\vcvrack-sdk-plugin-example`)
+* Execute the command `conan install ../vcvrack-sdk-plugin-example` (on Windows execute `conan install -pr mingw ..\vcvrack-sdk-plugin-example`)
 
 This will setup the development environment and install all required dependencies.
 
@@ -108,16 +108,6 @@ project(VCVRack${PLUGIN_NAME}Plugin)
 
 set(CMAKE_CXX_STANDARD 14)
 
-if ("${PLUGIN_SLUG}" STREQUAL "")
-  message(WARNING "Plugin Slug is missing! Add -DPLUGIN_SLUG=<SLUG> to the cmake call.")
-endif ()
-
-if (NOT "${PLUGIN_NAME}" STREQUAL "${PLUGIN_SLUG}")
-  message(WARNING "Plugin Slug '${PLUGIN_SLUG}' doesn't match defined PLUGIN_NAME variable '${PLUGIN_NAME}'")
-endif ()
-
-message(STATUS "Plugin Slug: '${PLUGIN_SLUG}'")
-
 # Do not change the LIB_NAME!
 set(LIB_NAME plugin)
 
@@ -151,9 +141,9 @@ set_target_properties(${LIB_NAME} PROPERTIES PREFIX "")
 ### Build the plugin with CMake
 * Change into the build directory, e.g. `vcvrack-sdk-plugin-example-build` (make sure the virtual environment is still activated!)
 * Generate the project with CMake
-  * On Windows execute `cmake -G Ninja -DPLUGIN_SLUG=MyPlugin -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="%HOMEPATH%"\Documents\Rack\plugins-v1 ..\vcvrack-sdk-plugin-example`
-  * On MacOS execute `cmake -G Ninja -DPLUGIN_SLUG=MyPlugin -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$HOME/Documents/Rack/plugins-v1 ../vcvrack-sdk-plugin-example`
-  * On Linux execute `cmake -G Ninja -DPLUGIN_SLUG=MyPlugin -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$HOME/.Rack/plugins-v1 ../vcvrack-sdk-plugin-example`
+  * On Windows execute `cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="%HOMEPATH%"\Documents\Rack\plugins-v1 ..\vcvrack-sdk-plugin-example`
+  * On MacOS execute `cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$HOME/Documents/Rack/plugins-v1 ../vcvrack-sdk-plugin-example`
+  * On Linux execute `cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$HOME/.Rack/plugins-v1 ../vcvrack-sdk-plugin-example`
 * Build with `cmake --build . --target install` (or `ninja install`)
 
 For testing start the Rack application and load the plugin.
@@ -162,7 +152,7 @@ For testing start the Rack application and load the plugin.
 build with the VCV Rack Makefile based process. To make this work when using CMake, the Makefile of the plugin just
 has to be updated as well by adding the required source files and include path setup.
 
-## Developing a Rack plugin under Windows with MinGW GCC and use MS Visual Studio IDE
+## Developing a Rack plugin under Windows with Visual Studio using MinGW GCC
 
 It is possible to use the MinGW GCC toolchain in Visual Studio for development by using the feature
 [Open Folder](https://docs.microsoft.com/en-us/visualstudio/ide/develop-code-in-visual-studio-without-projects-or-solutions?view=vs-2019).

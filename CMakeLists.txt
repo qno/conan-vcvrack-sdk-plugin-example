@@ -7,16 +7,6 @@ project(VCVRack${PLUGIN_NAME}Plugin)
 
 set(CMAKE_CXX_STANDARD 14)
 
-if ("${PLUGIN_SLUG}" STREQUAL "")
-  message(WARNING "Plugin Slug is missing! Add -DPLUGIN_SLUG=<SLUG> to the cmake call.")
-endif ()
-
-if (NOT "${PLUGIN_NAME}" STREQUAL "${PLUGIN_SLUG}")
-  message(WARNING "Plugin Slug '${PLUGIN_SLUG}' doesn't match defined PLUGIN_NAME variable '${PLUGIN_NAME}'")
-endif ()
-
-message(STATUS "Plugin Slug: '${PLUGIN_SLUG}'")
-
 # Do not change the LIB_NAME!
 set(LIB_NAME plugin)
 
