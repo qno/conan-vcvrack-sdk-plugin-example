@@ -1,4 +1,4 @@
-![.github/workflows/build-plugin.yml](https://github.com/qno/conan-vcvrack-sdk-plugin-example/workflows/.github/workflows/build-plugin.yml/badge.svg)
+![Build VCV Rack Plugin](https://github.com/qno/conan-vcvrack-sdk-plugin-example/workflows/Build%20VCV%20Rack%20Plugin/badge.svg)
 
 # A usage example for creating a Rack plugin with [conan-vcvrack-sdk](https://github.com/qno/conan-vcvrack-sdk)
 
