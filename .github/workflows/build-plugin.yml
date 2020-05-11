@@ -1,0 +1,109 @@
+name: Build VCV Rack Plugin
+on: [push]
+
+env:
+  create-mingw-profile: |
+    (
+      echo [settings]
+      echo os=Windows
+      echo os_build=Windows
+      echo arch=x86_64
+      echo arch_build=x86_64
+      echo compiler=gcc
+      echo compiler.version=8
+      echo compiler.exception=seh
+      echo compiler.libcxx=libstdc++11
+      echo compiler.threads=posix
+      echo build_type=Release
+      echo [build_requires]
+      echo mingw_installer/1.0@conan/stable
+      echo msys2/20190524
+    ) > mingw
+
+jobs:
+  build:
+    name: ${{ matrix.config.name }}
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      matrix:
+        config:
+        - {
+            name: Linux,
+            os: ubuntu-latest,
+            pip-cmd: pip3,
+            prepare-env: "export PATH=$PATH:$HOME/.local/bin",
+            conan-libcxx-setting: -s compiler.libcxx=libstdc++11,
+            conan-profile: "",
+            activate-env: . ./activate.sh,
+            deactivate-env: . ./deactivate.sh,
+            define-plugin-env: "PLUGIN_SLUG=`jq -r .slug ../plugin.json`; PLUGIN_VERSION=`jq -r .version ../plugin.json`",
+            plugin-slug: "$PLUGIN_SLUG",
+            plugin-version: "$PLUGIN_VERSION",
+            plugin-suffix: so,
+            strip-param: -s,
+            plugin-os: "lin"
+          }
+        - {
+            name: MacOS,
+            os: macos-latest,
+            pip-cmd: pip,
+            prepare-env: "export PATH=$PATH:$HOME/.local/bin; brew update || brew update; brew install p7zip",
+            conan-libcxx-setting: "",
+            conan-profile: "",
+            activate-env: . ./activate.sh,
+            deactivate-env: . ./deactivate.sh,
+            define-plugin-env: "PLUGIN_SLUG=`jq -r .slug ../plugin.json`; PLUGIN_VERSION=`jq -r .version ../plugin.json`",
+            plugin-slug: "$PLUGIN_SLUG",
+            plugin-version: "$PLUGIN_VERSION",
+            plugin-suffix: dylib,
+            strip-param: -S,
+            plugin-os: mac
+          }
+        - {
+            name: Windows,
+            os: windows-latest,
+            pip-cmd: python -m pip,
+            prepare-env: "",
+            conan-libcxx-setting: -s compiler.libcxx=libstdc++11,
+            conan-profile: -pr ..\mingw,
+            activate-env: .\activate.ps1,
+            deactivate-env: .\deactivate.ps1,
+            define-plugin-env: "$env:PLUGIN_SLUG=jq -r .slug ..\\plugin.json; $env:PLUGIN_VERSION=jq -r .version ..\\plugin.json",
+            plugin-slug: "$env:PLUGIN_SLUG",
+            plugin-version: "$env:PLUGIN_VERSION",
+            plugin-suffix: dll,
+            strip-param: -s,
+            plugin-os: win
+          }
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v1
+        with:
+         python-version: 3.x
+      - name: create conan MinGW profile
+        if: ${{ matrix.config.os == 'windows-latest' }}
+        run: ${{ env.create-mingw-profile }}
+        shell: cmd
+      - name: Build Plugin
+        run: |
+          ${{ matrix.config.prepare-env }}
+          ${{ matrix.config.pip-cmd }} install --user --upgrade pip
+          ${{ matrix.config.pip-cmd }} install --user conan
+          conan user
+          conan remote add qno https://api.bintray.com/conan/qno/conan-public
+          mkdir build
+          cd build
+          conan install .. ${{ matrix.config.conan-libcxx-setting }} -s build_type=Release ${{ matrix.config.conan-profile }} --build missing
+          ${{ matrix.config.activate-env }}
+          ${{ matrix.config.define-plugin-env }}
+          cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=dist -G Ninja ..
+          cmake --build . --target install
+          cd dist
+          strip ${{ matrix.config.strip-param }} ${{ matrix.config.plugin-slug }}/plugin.${{ matrix.config.plugin-suffix }}
+          7z a -tzip -mx=9 ${{ matrix.config.plugin-slug }}-${{ matrix.config.plugin-version }}-${{ matrix.config.plugin-os }}.zip ${{ matrix.config.plugin-slug }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          path: build/dist/**/*.zip
+          name: ${{ matrix.config.name }}
