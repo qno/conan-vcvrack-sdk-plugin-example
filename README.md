@@ -1,4 +1,6 @@
-# A usage example for creating a Rack plugin with [conan-vcvrack-sdk](https://github.com/qno/conan-vcvrack-sdk).
+![.github/workflows/build-plugin.yml](https://github.com/qno/conan-vcvrack-sdk-plugin-example/workflows/.github/workflows/build-plugin.yml/badge.svg)
+
+# A usage example for creating a Rack plugin with [conan-vcvrack-sdk](https://github.com/qno/conan-vcvrack-sdk)
 
 This example follows the [VCV Rack Plugin Development Tutorial](https://vcvrack.com/manual/PluginDevelopmentTutorial).
 
@@ -11,6 +13,7 @@ Except for the fact that a C++ compiler must be installed on Linux and MacOS.
 * [Build the plugin with the Rack SDK Makefile](#Build-the-plugin-with-the-Rack-SDK-Makefile)
 * [Using CMake for development](#Using-CMake-for-development)
 * [Developing a Rack plugin under Windows with Visual Studio using MinGW GCC](#Developing-a-Rack-plugin-under-Windows-with-Visual-Studio-using-MinGW-GCC)
+* [CI with Github Actions](#CI-with-Github-Actions)
 
 ### Follow the usage instructions from [conan-vcvrack-sdk](https://github.com/qno/conan-vcvrack-sdk#usage)
 
@@ -18,7 +21,7 @@ Except for the fact that a C++ compiler must be installed on Linux and MacOS.
 
 Rack plugins for Windows are compiled with MinGW GCC.
 
-***Note:*** There is no need to have MSYS2 and MinGW toolchain installed. It will be completely handled by Conan!
+***Note:*** There is no need to have MSYS2 and MinGW toolchain installed as it will be handled by Conan!
 
 * Create a [Conan profile](https://docs.conan.io/en/latest/reference/profiles.html) for MinGW under `<USER HOME>\.conan\profiles`, called e.g. `mingw`, with the following content:
     ```
@@ -63,7 +66,7 @@ Rack plugins for Windows are compiled with MinGW GCC.
 
 This will setup the development environment and install all required dependencies.
 
-Now load the [generated virtual environment by Conan](https://docs.conan.io/en/latest/mastering/virtualenv.html?#virtualenv-generator):
+Now load the generated [virtual environment](https://docs.conan.io/en/latest/mastering/virtualenv.html?#virtualenv-generator):
 * on Windows call `activate.bat`
 * on Linux and MacOS call `source ./activate.sh`
 
@@ -212,3 +215,9 @@ endif ()
 * Copy the generated `CMakeSettings.json` file into the sources folder
 
 Now start Visual Studio IDE and open project by **Open Folder** and navigate to your plugin sources.
+
+## CI with Github Actions
+
+This repository contains a Github workflow definition to build the plugin.
+On each push to the repo the plugin gets build for the Linux, MacOS and Windows platform.
+The build result will be attached as artifact and can be accessed via the [Actions](https://github.com/qno/conan-vcvrack-sdk-plugin-example/actions) tab.
