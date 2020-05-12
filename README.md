@@ -219,5 +219,8 @@ Now start Visual Studio IDE and open project by **Open Folder** and navigate to 
 ## CI with Github Actions
 
 This repository contains a Github workflow definition to build the plugin.
-On each push to the repo the plugin gets build for the Linux, MacOS and Windows platform.
+On each push to the repo the plugin gets build for the Linux, MacOS and Windows platforms.
 The build result will be attached as artifact and can be accessed via the [Actions](https://github.com/qno/conan-vcvrack-sdk-plugin-example/actions) tab.
+
+Using Github workflow is very convenient, as it does not require to register and setup 3rd party CI services
+like Azure, Travis CI etc.
