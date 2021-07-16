@@ -98,7 +98,7 @@ jobs:
           ${{ matrix.config.pip-cmd }} install --user --upgrade pip
           ${{ matrix.config.pip-cmd }} install --user conan
           conan user
-          conan remote add qno https://api.bintray.com/conan/qno/conan-public
+          conan remote add qno https://qno.jfrog.io/artifactory/api/conan/public-conan
           mkdir build
           cd build
           conan install .. ${{ matrix.config.conan-libcxx-setting }} -s build_type=Release ${{ matrix.config.conan-profile }} --build missing
