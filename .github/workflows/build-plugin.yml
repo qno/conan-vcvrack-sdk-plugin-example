@@ -98,6 +98,7 @@ jobs:
           ${{ matrix.config.pip-cmd }} install --user --upgrade pip
           ${{ matrix.config.pip-cmd }} install --user conan
           conan user
+          conan config set general.revisions_enabled=1
           conan remote add qno https://qno.jfrog.io/artifactory/api/conan/public-conan
           mkdir build
           cd build
